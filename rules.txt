@@ -1,0 +1,414 @@
+# 🚀 AI-Knowledge Graph Platform - Development Rules & Best Practices
+
+## 📋 АРХИТЕКТУРНЫЕ ПРИНЦИПЫ
+
+### 🏗️ Модульность и Разделение Ответственности
+- **Single Responsibility Principle**: Один класс/функция = одна ответственность
+- **Dependency Injection**: Внедрение зависимостей через конструкторы/параметры
+- **Interface Segregation**: Мелкие, специфичные интерфейсы вместо больших
+- **Composition over Inheritance**: Предпочитать композицию наследованию
+- **Domain-Driven Design**: Структура кода отражает бизнес-логику
+
+### 🔧 Файловая Структура
+```
+src/
+├── components/           # Переиспользуемые UI компоненты
+│   ├── common/          # Базовые компоненты (Button, Input, Modal)
+│   ├── layout/          # Layout компоненты (Header, Sidebar, Footer)
+│   └── features/        # Специфичные компоненты функций
+├── pages/               # Страницы приложения
+├── hooks/               # Custom React hooks
+├── services/            # API сервисы и бизнес-логика
+├── store/               # State management (Zustand/Redux)
+├── types/               # TypeScript типы и интерфейсы
+├── utils/               # Утилитарные функции
+├── constants/           # Константы приложения
+└── assets/              # Статические ресурсы
+```
+
+---
+
+## 💻 FRONTEND BEST PRACTICES
+
+### ⚡ Производительность
+- **Code Splitting**: React.lazy() + Suspense для ленивой загрузки
+- **Мемоизация**: React.memo, useMemo, useCallback для оптимизации рендеров
+- **Virtualization**: react-window для больших списков
+- **Bundle Analysis**: webpack-bundle-analyzer для контроля размера
+- **Tree Shaking**: ES6 imports для удаления неиспользуемого кода
+- **Image Optimization**: WebP, lazy loading, responsive images
+- **Preloading**: Critical resources и route preloading
+
+### 🔒 TypeScript Standards
+```typescript
+// ✅ Хорошо
+interface UserProfile {
+  readonly id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+}
+
+// ✅ Строгие типы для API
+type ApiResponse<T> = {
+  data: T;
+  status: 'success' | 'error';
+  message?: string;
+};
+
+// ✅ Generic компоненты
+interface TableProps<T> {
+  data: T[];
+  columns: ColumnConfig<T>[];
+  onRowClick: (item: T) => void;
+}
+```
+
+### 🎨 UI/UX Excellence
+- **Design System**: Консистентные цвета, типографика, отступы
+- **Accessibility**: ARIA labels, keyboard navigation, screen readers
+- **Responsive Design**: Mobile-first подход, fluid typography
+- **Loading States**: Скелетоны, спиннеры, прогресс-бары
+- **Error Boundaries**: Graceful error handling с fallback UI
+- **Dark Mode**: Системная поддержка темной темы
+- **Animation**: Smooth transitions, meaningful motion design
+
+### 🔗 State Management
+```typescript
+// ✅ Zustand store pattern
+interface AuthStore {
+  user: User | null;
+  token: string | null;
+  isLoading: boolean;
+  
+  // Actions
+  login: (credentials: LoginRequest) => Promise<void>;
+  logout: () => void;
+  refreshToken: () => Promise<void>;
+}
+
+// ✅ Селекторы для оптимизации
+const useAuthUser = () => useAuthStore(state => state.user);
+const useAuthActions = () => useAuthStore(state => ({
+  login: state.login,
+  logout: state.logout
+}));
+```
+
+---
+
+## 🖥️ BACKEND BEST PRACTICES
+
+### 🏛️ API Design
+```python
+# ✅ RESTful endpoints
+GET    /api/v1/documents          # Список документов
+GET    /api/v1/documents/{id}     # Конкретный документ
+POST   /api/v1/documents          # Создание документа
+PUT    /api/v1/documents/{id}     # Полное обновление
+PATCH  /api/v1/documents/{id}     # Частичное обновление
+DELETE /api/v1/documents/{id}     # Удаление
+
+# ✅ Consistent response format
+{
+  "data": {},
+  "meta": {
+    "total": 100,
+    "page": 1,
+    "per_page": 20
+  },
+  "links": {
+    "next": "/api/v1/documents?page=2",
+    "prev": null
+  }
+}
+```
+
+### 🔐 Security First
+- **Input Validation**: Pydantic models для валидации всех входных данных
+- **Rate Limiting**: Защита от DDoS и брутфорса
+- **CORS Configuration**: Строгая настройка allowed origins
+- **SQL Injection Protection**: Только параметризованные запросы
+- **Authentication**: JWT + refresh tokens, secure httpOnly cookies
+- **Authorization**: RBAC с детализированными правами
+- **Data Encryption**: Шифрование чувствительных данных в БД
+
+### 📊 Database Excellence
+```python
+# ✅ Optimized queries
+class DocumentRepository:
+    async def get_documents_with_stats(
+        self, 
+        user_id: str,
+        limit: int = 20,
+        offset: int = 0
+    ) -> List[DocumentWithStats]:
+        return await self.db.execute(
+            select(Document, func.count(DocumentView.id))
+            .join(DocumentView, isouter=True)
+            .where(Document.owner_id == user_id)
+            .group_by(Document.id)
+            .limit(limit)
+            .offset(offset)
+        )
+
+# ✅ Индексы для производительности
+CREATE INDEX CONCURRENTLY idx_documents_owner_created 
+ON documents(owner_id, created_at DESC);
+```
+
+### 🚀 Performance & Scalability
+- **Caching Strategy**: Redis для session, query results, rate limiting
+- **Database Connection Pooling**: Async pool с настройкой min/max connections
+- **Background Tasks**: Celery для длительных операций
+- **Monitoring**: Prometheus metrics, structured logging
+- **Health Checks**: Liveness/readiness endpoints для Kubernetes
+- **Graceful Shutdown**: Proper cleanup при остановке сервиса
+
+---
+
+## 🧪 TESTING STRATEGY
+
+### Frontend Testing
+```typescript
+// ✅ Component testing
+describe('DocumentCard', () => {
+  it('should display document title and metadata', () => {
+    render(<DocumentCard document={mockDocument} />);
+    expect(screen.getByText(mockDocument.title)).toBeInTheDocument();
+    expect(screen.getByText(mockDocument.author)).toBeInTheDocument();
+  });
+
+  it('should call onDelete when delete button clicked', async () => {
+    const onDelete = jest.fn();
+    render(<DocumentCard document={mockDocument} onDelete={onDelete} />);
+    
+    await user.click(screen.getByRole('button', { name: /delete/i }));
+    expect(onDelete).toHaveBeenCalledWith(mockDocument.id);
+  });
+});
+```
+
+### Backend Testing
+```python
+# ✅ API testing
+@pytest.mark.asyncio
+async def test_create_document_success(client, auth_headers):
+    response = await client.post(
+        "/api/v1/documents",
+        json={"title": "Test Doc", "content": "Content"},
+        headers=auth_headers
+    )
+    assert response.status_code == 201
+    assert response.json()["data"]["title"] == "Test Doc"
+
+# ✅ Service layer testing
+@pytest.mark.asyncio
+async def test_document_service_create_with_tags():
+    service = DocumentService(mock_repo)
+    document = await service.create_document(
+        CreateDocumentRequest(title="Test", tags=["tag1", "tag2"])
+    )
+    assert len(document.tags) == 2
+```
+
+---
+
+## 🔄 CI/CD & DEPLOYMENT
+
+### Code Quality Gates
+```yaml
+# ✅ GitHub Actions pipeline
+- name: Code Quality Checks
+  run: |
+    npm run lint
+    npm run type-check
+    npm run test:coverage
+    npm run build
+    
+- name: Security Scan
+  run: |
+    npm audit
+    python -m safety check
+```
+
+### Environment Strategy
+```bash
+# ✅ Environment-specific configs
+.env.development     # Local development
+.env.staging        # Staging environment
+.env.production     # Production secrets
+```
+
+---
+
+## 📝 CODE STANDARDS
+
+### Naming Conventions
+```typescript
+// ✅ Components: PascalCase
+const DocumentUploader: React.FC = () => {};
+
+// ✅ Hooks: camelCase с префиксом use
+const useDocumentUpload = () => {};
+
+// ✅ Constants: SCREAMING_SNAKE_CASE
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+// ✅ Functions: camelCase, descriptive
+const validateEmailFormat = (email: string): boolean => {};
+```
+
+### Error Handling
+```typescript
+// ✅ Typed errors
+class ValidationError extends Error {
+  constructor(
+    public field: string,
+    public value: any,
+    message: string
+  ) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
+
+// ✅ Result pattern
+type Result<T, E = Error> = 
+  | { success: true; data: T }
+  | { success: false; error: E };
+```
+
+### Documentation
+```typescript
+/**
+ * Uploads document to storage and creates database record
+ * 
+ * @param file - File to upload (max 10MB)
+ * @param metadata - Document metadata
+ * @returns Promise resolving to created document
+ * 
+ * @throws {ValidationError} When file exceeds size limit
+ * @throws {NetworkError} When upload fails
+ * 
+ * @example
+ * ```typescript
+ * const document = await uploadDocument(file, {
+ *   title: "My Document",
+ *   tags: ["important"]
+ * });
+ * ```
+ */
+```
+
+---
+
+## 🚨 CRITICAL RULES
+
+### ❌ ЗАПРЕЩЕНО
+- Любой код без TypeScript типов
+- Мутация состояния напрямую (только через actions)
+- Inline styles (только CSS-in-JS или CSS modules)
+- Hardcoded URLs и константы
+- Игнорирование ESLint/TypeScript ошибок
+- Коммиты без тестов для новой функциональности
+- Console.log в production коде
+
+### ✅ ОБЯЗАТЕЛЬНО
+- Code review для всех PR
+- Unit тесты для всех сервисов и утилит
+- Integration тесты для API endpoints
+- E2E тесты для критических user flows
+- Performance budget: < 3s FCP, < 5s LCP
+- Accessibility score > 95 (Lighthouse)
+- TypeScript strict mode без any
+- Structured logging с correlation IDs
+
+---
+
+## 📊 MONITORING & OBSERVABILITY
+
+### Metrics to Track
+```typescript
+// ✅ Key Performance Indicators
+const KPIs = {
+  // Performance
+  pageLoadTime: '< 3s',
+  apiResponseTime: '< 200ms',
+  errorRate: '< 1%',
+  
+  // Business
+  dailyActiveUsers: 'track growth',
+  documentUploads: 'track engagement',
+  searchQueries: 'track usage patterns',
+  
+  // Technical
+  cpuUsage: '< 70%',
+  memoryUsage: '< 80%',
+  dbConnectionPool: '< 90%'
+};
+```
+
+### Alerting Strategy
+- **Critical**: P0 - System down, data loss
+- **High**: P1 - Major features broken, performance degraded > 50%
+- **Medium**: P2 - Minor features broken, performance degraded > 20%
+- **Low**: P3 - Enhancement requests, optimization opportunities
+
+---
+
+## 🎯 TEAM COLLABORATION
+
+### PR Guidelines
+1. **Title**: [TYPE] Brief description (e.g., [FEAT] Add document search)
+2. **Description**: What, why, how + screenshots for UI changes
+3. **Testing**: How to test + test coverage report
+4. **Breaking Changes**: Highlight any breaking changes
+5. **Size**: Max 400 lines changed (split larger PRs)
+
+### Code Review Checklist
+- [ ] Code follows naming conventions
+- [ ] All functions have proper TypeScript types
+- [ ] Unit tests cover new functionality
+- [ ] No security vulnerabilities
+- [ ] Performance impact considered
+- [ ] Accessibility requirements met
+- [ ] Mobile responsiveness verified
+- [ ] Error handling implemented
+- [ ] Logging added for debugging
+
+---
+
+## 🔮 FUTURE-PROOFING
+
+### Technology Upgrades
+- **React**: Stay within 1 major version of latest
+- **TypeScript**: Update quarterly to latest stable
+- **Node.js**: LTS version + security patches
+- **Dependencies**: Monthly security updates, quarterly feature updates
+
+### Scalability Considerations
+- **Horizontal Scaling**: Design for multiple instance deployment
+- **Database Sharding**: Plan for data partitioning strategies
+- **Microservices**: Identify service boundaries for future splitting
+- **API Versioning**: Maintain backward compatibility
+
+---
+
+## 🏆 SUCCESS METRICS
+
+### Development Velocity
+- **Feature Delivery**: 2-week sprint cycles
+- **Bug Resolution**: 95% closed within 1 week
+- **Code Review**: < 24 hours turnaround
+- **Deployment Frequency**: Daily to staging, weekly to production
+
+### Quality Metrics
+- **Test Coverage**: > 80% for critical paths
+- **Code Duplication**: < 5%
+- **Technical Debt Ratio**: < 10%
+- **Performance Budget**: 100% compliance
+
+---
+
+**🎉 REMEMBER: Great code is not just working code - it's maintainable, testable, secure, performant, and delightful to work with!**
