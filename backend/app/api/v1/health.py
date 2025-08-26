@@ -19,3 +19,4 @@ async def health_check() -> HealthResponse:
         app_name=settings.APP_NAME,
         version=settings.APP_VERSION
     )
+

@@ -29,3 +29,4 @@ class DashboardData(BaseModel):
     
     stats: List[StatCard] = Field(..., description="Statistics cards")
     recent_activities: List[ActivityItem] = Field(..., description="Recent activities")
+

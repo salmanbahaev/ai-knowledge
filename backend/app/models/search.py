@@ -33,3 +33,4 @@ class SearchResponse(BaseModel):
     total: int = Field(..., ge=0, description="Total number of results")
     query: str = Field(..., description="Original search query")
     took: float = Field(..., ge=0, description="Search time in seconds")
+

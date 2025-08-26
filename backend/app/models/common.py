@@ -32,3 +32,4 @@ class HealthResponse(BaseModel):
     app_name: str
     version: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
+
