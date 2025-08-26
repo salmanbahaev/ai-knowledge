@@ -1,0 +1,291 @@
+/**
+ * i18n specific styles for responsive layout
+ */
+
+/* Language-specific text adjustments */
+[data-lang="ru"] {
+  /* Russian text tends to be longer, maintain consistent spacing */
+  letter-spacing: normal;
+}
+
+[data-lang="en"] {
+  /* English text spacing */
+  letter-spacing: normal;
+}
+
+/* Responsive text containers */
+.i18n-text-container {
+  min-height: 1.5rem;
+  display: flex;
+  align-items: center;
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease;
+}
+
+/* Prevent font changes that affect text width */
+[data-lang] * {
+  font-family: inherit !important;
+  font-weight: inherit !important;
+  letter-spacing: inherit !important;
+}
+
+/* Consistent text rendering */
+[data-lang] {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Button text adjustments */
+.i18n-button {
+  min-width: 100px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+[data-lang="ru"] .i18n-button {
+  min-width: 120px;
+}
+
+/* Admin Panel Button Styles */
+.i18n-enhanced-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 16px;
+  background: #3b82f6; /* primary-500 */
+  border: 1px solid #3b82f6;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  transition:
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+.i18n-enhanced-button:hover {
+  background: #2563eb; /* primary-600 */
+  border-color: #2563eb;
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.i18n-enhanced-button:active {
+  background: #1d4ed8; /* primary-700 */
+  border-color: #1d4ed8;
+}
+
+.i18n-enhanced-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #dbeafe; /* primary-100 */
+}
+
+/* Dark mode support */
+.dark .i18n-enhanced-button {
+  background: #1e40af; /* primary-800 */
+  border-color: #1e40af;
+}
+
+.dark .i18n-enhanced-button:hover {
+  background: #1e3a8a; /* primary-900 */
+  border-color: #1e3a8a;
+}
+
+.dark .i18n-enhanced-button:focus {
+  box-shadow: 0 0 0 2px #1e3a8a; /* primary-900 */
+}
+
+/* Secondary button style */
+.i18n-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 16px;
+  background: white;
+  border: 1px solid #d1d5db; /* gray-300 */
+  border-radius: 6px;
+  color: #374151; /* gray-700 */
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  transition:
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+  cursor: pointer;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+.i18n-secondary-button:hover {
+  background: #f9fafb; /* gray-50 */
+  border-color: #9ca3af; /* gray-400 */
+}
+
+.i18n-secondary-button:active {
+  background: #f3f4f6; /* gray-100 */
+  border-color: #6b7280; /* gray-500 */
+}
+
+.i18n-secondary-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #f3f4f6; /* gray-100 */
+}
+
+/* Dark mode secondary buttons */
+.dark .i18n-secondary-button {
+  background: #374151; /* gray-700 */
+  border-color: #4b5563; /* gray-600 */
+  color: #d1d5db; /* gray-300 */
+}
+
+.dark .i18n-secondary-button:hover {
+  background: #4b5563; /* gray-600 */
+  border-color: #6b7280; /* gray-500 */
+}
+
+.dark .i18n-secondary-button:focus {
+  box-shadow: 0 0 0 2px #4b5563; /* gray-600 */
+}
+
+/* Disabled button states */
+.i18n-enhanced-button:disabled,
+.i18n-secondary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.i18n-enhanced-button:disabled:hover,
+.i18n-secondary-button:disabled:hover {
+  background: inherit;
+  border-color: inherit;
+  box-shadow: none;
+}
+
+/* Button content wrapper */
+.i18n-button-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.i18n-button-content.flex-col {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Button icon - no animation for admin style */
+.i18n-button-icon {
+  /* Icons remain static in admin interfaces */
+}
+
+/* Navigation items */
+.i18n-nav-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .i18n-nav-item {
+    font-size: 0.875rem;
+  }
+}
+
+/* Search input adjustments */
+.i18n-search-input::placeholder {
+  transition: opacity 0.3s ease;
+}
+
+/* Remove language-specific font size changes */
+
+/* Card title adjustments */
+.i18n-card-title {
+  line-height: 1.4 !important;
+  min-height: 44.8px !important;
+  height: 44.8px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Page content alignment */
+.i18n-page-content {
+  text-align: left;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+/* Center content containers */
+.i18n-center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.i18n-center-content h3 {
+  margin-bottom: 1rem;
+}
+
+.i18n-center-content p {
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+}
+
+/* Dropdown menu adjustments */
+.i18n-dropdown {
+  min-width: 200px;
+}
+
+[data-lang="ru"] .i18n-dropdown {
+  min-width: 220px;
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 1024px) {
+  [data-lang="ru"] .i18n-grid-responsive {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  [data-lang="en"] .i18n-grid-responsive {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+/* Loading states */
+.i18n-loading-text {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Text truncation for different languages */
+.i18n-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-lang="ru"] .i18n-truncate {
+  /* Allow more space for Russian text */
+  max-width: 90%;
+}
+
+[data-lang="en"] .i18n-truncate {
+  max-width: 100%;
+}

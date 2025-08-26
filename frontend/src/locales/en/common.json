@@ -1,0 +1,170 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "search": "Search",
+    "documents": "Documents",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "upload": "Upload"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of your AI Knowledge Graph Platform",
+    "stats": {
+      "totalDocuments": "Total Documents",
+      "totalUsers": "Total Users",
+      "totalQueries": "Total Queries",
+      "avgResponseTime": "Avg Response Time"
+    },
+    "recentActivity": {
+      "title": "Recent Activity",
+      "viewAll": "View All",
+      "actions": {
+        "uploaded": "uploaded a document",
+        "searched": "performed a search",
+        "chatted": "started a chat session",
+        "analyzed": "analyzed a document"
+      },
+      "timeAgo": {
+        "minutesAgo": "{{count}} minute ago",
+        "minutesAgo_other": "{{count}} minutes ago",
+        "hoursAgo": "{{count}} hour ago",
+        "hoursAgo_other": "{{count}} hours ago",
+        "daysAgo": "{{count}} day ago",
+        "daysAgo_other": "{{count}} days ago"
+      }
+    }
+  },
+  "search": {
+    "title": "Search",
+    "subtitle": "Find information across your knowledge base",
+    "placeholder": "Search documents, concepts, or ask questions...",
+    "filters": {
+      "title": "Filters",
+      "all": "All",
+      "documents": "Documents",
+      "concepts": "Concepts",
+      "relations": "Relations"
+    },
+    "results": {
+      "found": "Found {{count}} result",
+      "found_other": "Found {{count}} results",
+      "noResults": "No results found",
+      "noResultsDesc": "Try adjusting your search terms or filters",
+      "searchPlaceholder": "Enter your search query..."
+    },
+    "buttons": {
+      "search": "Search",
+      "clear": "Clear",
+      "filter": "Filter"
+    }
+  },
+  "documents": {
+    "title": "Documents",
+    "subtitle": "Manage your document collection",
+    "upload": {
+      "title": "Upload Documents",
+      "dragDrop": "Drag and drop files here, or click to select",
+      "supportedFormats": "Supported formats: PDF, DOC, DOCX, TXT",
+      "maxSize": "Maximum file size: 10MB",
+      "button": "Upload Files"
+    },
+    "list": {
+      "name": "Name",
+      "size": "Size",
+      "type": "Type",
+      "uploaded": "Uploaded",
+      "actions": "Actions"
+    },
+    "actions": {
+      "view": "View",
+      "download": "Download",
+      "delete": "Delete",
+      "edit": "Edit",
+      "browse": "Browse Documents",
+      "uploadNew": "Upload New"
+    },
+    "management": {
+      "title": "Document Management Coming Soon",
+      "description": "Browse, search, and organize your existing documents. View document details, metadata, and manage access permissions."
+    }
+  },
+  "upload": {
+    "title": "Upload Documents",
+    "subtitle": "Add new documents to your knowledge base",
+    "dropzone": {
+      "title": "Upload Files",
+      "description": "Drag and drop your files here, or click to browse",
+      "supported": "Supported formats: PDF, DOC, DOCX, TXT, MD",
+      "maxSize": "Maximum file size: 10MB per file"
+    },
+    "progress": {
+      "uploading": "Uploading...",
+      "processing": "Processing...",
+      "completed": "Upload completed",
+      "failed": "Upload failed"
+    }
+  },
+  "chat": {
+    "title": "AI Chat",
+    "subtitle": "Ask questions about your documents and get intelligent answers.",
+    "welcome": "Hello! I'm your AI knowledge assistant. I can help you find information from your documents, answer questions, and provide insights. What would you like to know?",
+    "placeholder": "Type your message here...",
+    "send": "Send"
+  },
+  "graph": {
+    "title": "Knowledge Graph",
+    "subtitle": "Visualize connections between your documents, people, and topics.",
+    "coming": {
+      "title": "Interactive Knowledge Graph Coming Soon",
+      "description": "Explore relationships between documents, people, and concepts in an interactive 3D graph.",
+      "powered": "Powered by Neo4j + D3.js"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure your application preferences and integrations.",
+    "coming": {
+      "title": "Settings Panel Coming Soon",
+      "description": "User preferences, integrations, and system configuration options will be available here."
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "retry": "Retry",
+    "refresh": "Refresh"
+  },
+  "language": {
+    "switch": "Switch Language",
+    "english": "English",
+    "russian": "Русский",
+    "current": "Current Language"
+  },
+  "errors": {
+    "generic": "An error occurred. Please try again.",
+    "network": "Network error. Please check your connection.",
+    "notFound": "Page not found",
+    "unauthorized": "You are not authorized to access this resource",
+    "serverError": "Server error. Please try again later.",
+    "dashboardLoadFailed": "Failed to load dashboard data",
+    "timeout": "Request timeout. Please try again.",
+    "connectionFailed": "Connection failed. Please check your internet connection.",
+    "invalidResponse": "Invalid response from server",
+    "permissionDenied": "Permission denied"
+  }
+}
