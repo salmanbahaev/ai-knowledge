@@ -46,26 +46,25 @@ const getIconComponent = (iconName: string) => {
 export const Dashboard: React.FC = () => {
   const { t } = useTranslation();
   const translateError = useErrorTranslation(t);
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>({
+    stats: [
+      { title: 'Документы', value: '42', change: '+12%', change_type: 'positive', icon: 'FileText' },
+      { title: 'Поиски', value: '156', change: '+8%', change_type: 'positive', icon: 'TrendingUp' },
+      { title: 'Чаты', value: '23', change: '+15%', change_type: 'positive', icon: 'MessageCircle' },
+      { title: 'Пользователи', value: '8', change: '+2%', change_type: 'positive', icon: 'Users' }
+    ],
+    recent_activities: [
+      { id: '1', action: 'загрузил документ', user: 'Иван Петров', time: '2 минуты назад', type: 'upload' },
+      { id: '2', action: 'выполнил поиск', user: 'Анна Сидорова', time: '5 минут назад', type: 'search' },
+      { id: '3', action: 'начал чат', user: 'Петр Иванов', time: '10 минут назад', type: 'chat' }
+    ]
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setIsLoading(true);
-        const data = await dashboardService.getStats();
-        setDashboardData(data);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load dashboard data');
-        console.error('Dashboard data fetch error:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchDashboardData();
+    // Временно отключаем API вызов
+    setIsLoading(false);
   }, []);
 
   if (isLoading) {
@@ -111,7 +110,7 @@ export const Dashboard: React.FC = () => {
 
       {/* Stats Grid */}
       <div className="responsive-grid responsive-grid-4 responsive-margin">
-        {dashboardData?.stats.map((stat: StatCardType, index: number) => (
+        {dashboardData?.stats?.map((stat: StatCardType, index: number) => (
           <div key={index} className="responsive-card">
             <StatCard
               title={stat.title}
@@ -133,7 +132,7 @@ export const Dashboard: React.FC = () => {
             <Activity className="w-5 h-5 text-gray-400" />
           </div>
           <div className="space-y-3">
-            {dashboardData?.recent_activities.map((activity: ActivityItem) => (
+            {dashboardData?.recent_activities?.map((activity: ActivityItem) => (
               <div key={activity.id} className="flex items-start space-x-3 touch-spacing">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium ${
                   activity.type === 'upload' ? 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400' :

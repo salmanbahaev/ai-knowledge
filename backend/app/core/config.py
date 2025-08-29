@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     # App Info
     APP_NAME: str = "AI Knowledge Graph Platform"
     APP_VERSION: str = "0.1.0"
-    DEBUG: bool = os.getenv("DEBUG", "false").lower() == "true"
+    DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
     
     # CORS
     ALLOWED_HOSTS: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]

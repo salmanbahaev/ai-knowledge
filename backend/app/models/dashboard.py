@@ -24,6 +24,22 @@ class ActivityItem(BaseModel):
     type: str = Field(..., description="Activity type")
 
 
+class DashboardStats(BaseModel):
+    """Dashboard statistics model."""
+    
+    total_documents: int = Field(..., description="Total number of documents")
+    total_searches: int = Field(..., description="Total number of searches")
+    total_chats: int = Field(..., description="Total number of chat sessions")
+    active_users: int = Field(..., description="Number of active users")
+
+
+class DashboardResponse(BaseModel):
+    """Dashboard API response model."""
+    
+    message: str = Field(..., description="Response message")
+    data: DashboardStats = Field(..., description="Dashboard statistics")
+
+
 class DashboardData(BaseModel):
     """Dashboard data response."""
     

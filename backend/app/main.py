@@ -10,9 +10,9 @@ from app.models.common import ErrorResponse
 
 # Create FastAPI application
 app = FastAPI(
-    title=settings.APP_NAME,
+    title="AI Платформа Управления Знаниями",
     version=settings.APP_VERSION,
-    description="AI-powered knowledge management platform with graph-based insights",
+    description="Умная платформа для управления знаниями с поиском по документам, ИИ-ассистентом и графом связей",
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
 )
@@ -43,14 +43,14 @@ async def global_exception_handler(request, exc):
     )
 
 
-@app.get("/", tags=["root"])
+@app.get("/", tags=["Главная"])
 async def root():
-    """Root endpoint with basic app information."""
+    """Главная страница API с базовой информацией о приложении."""
     return {
-        "app": settings.APP_NAME,
+        "app": "AI Платформа Управления Знаниями",
         "version": settings.APP_VERSION,
-        "status": "running",
-        "docs": "/docs" if settings.DEBUG else "disabled"
+        "status": "работает",
+        "docs": "/docs" if settings.DEBUG else "отключена"
     }
 
 

@@ -4,9 +4,26 @@ globs: ["**/*"]
 alwaysApply: true
 ---
 
-# 🚀 AI-Knowledge Graph Platform - Development Rules & Best Practices
+# 🚀 AI-Knowledge Graph Platform - Enterprise Development Rules & Best Practices
 
 ## 📋 АРХИТЕКТУРНЫЕ ПРИНЦИПЫ
+
+### 🏛️ Выбранная архитектура: Гибридный монолит (Вариант B)
+
+**Core Stack:**
+
+- **Backend:** FastAPI + PostgreSQL + Redis + Celery
+- **AI Search:** DSPy + OpenAI + Vector DB (Pinecone/Weaviate)
+- **File Processing:** Ingest + Background jobs
+- **Real-time:** WebSocket + Redis pub/sub
+- **Frontend:** React 18 + TypeScript + Tailwind
+
+**Принципы архитектуры:**
+
+- **Monolith First** - простота разработки и деплоя
+- **Modular Design** - четкое разделение компонентов внутри монолита
+- **Performance First** - оптимизация на каждом уровне
+- **AI-Native** - DSPy для программируемых промптов, не hardcode
 
 ### 🏗️ Модульность и Разделение Ответственности
 
@@ -18,20 +35,43 @@ alwaysApply: true
 
 ### 🔧 Файловая Структура
 
+**Frontend (React):**
+
 ```
-src/
-├── components/           # Переиспользуемые UI компоненты
-│   ├── common/          # Базовые компоненты (Button, Input, Modal)
-│   ├── layout/          # Layout компоненты (Header, Sidebar, Footer)
-│   └── features/        # Специфичные компоненты функций
-├── pages/               # Страницы приложения
-├── hooks/               # Custom React hooks
-├── services/            # API сервисы и бизнес-логика
-├── store/               # State management (Zustand/Redux)
-├── types/               # TypeScript типы и интерфейсы
-├── utils/               # Утилитарные функции
-├── constants/           # Константы приложения
-└── assets/              # Статические ресурсы
+frontend/src/
+├── components/          # Переиспользуемые UI компоненты
+│   ├── common/         # Базовые компоненты (Button, Input, Modal)
+│   ├── layout/         # Layout компоненты (Header, Sidebar, Footer)
+│   └── features/       # Специфичные компоненты функций
+├── pages/              # Страницы приложения
+├── hooks/              # Custom React hooks
+├── services/           # API клиенты и бизнес-логика
+├── store/              # State management (Zustand)
+├── types/              # TypeScript типы и интерфейсы
+├── utils/              # Утилитарные функции
+├── constants/          # Константы приложения
+├── i18n/               # Интернационализация
+└── assets/             # Статические ресурсы
+```
+
+**Backend (FastAPI):**
+
+```
+backend/
+├── app/
+│   ├── api/            # API endpoints
+│   │   └── v1/         # API версия 1
+│   ├── core/           # Конфигурация, безопасность
+│   ├── models/         # Pydantic модели
+│   ├── services/       # Бизнес-логика
+│   │   ├── search/     # DSPy поисковые программы
+│   │   ├── ingest/     # Обработка файлов
+│   │   └── ai/         # AI сервисы
+│   ├── db/             # Database модели и миграции
+│   ├── tasks/          # Celery задачи
+│   └── utils/          # Утилиты
+├── tests/              # Тесты
+└── alembic/            # Database миграции
 ```
 
 ## 🌍 INTERNATIONALIZATION (i18n)
@@ -115,7 +155,7 @@ interface TableProps<T> {
 ### 🏛️ API Design
 
 ```python
-# ✅ RESTful endpoints
+# ✅ RESTful endpoints с версионированием
 GET    /api/v1/documents          # Список документов
 GET    /api/v1/documents/{id}     # Конкретный документ
 POST   /api/v1/documents          # Создание документа
@@ -123,53 +163,231 @@ PUT    /api/v1/documents/{id}     # Полное обновление
 PATCH  /api/v1/documents/{id}     # Частичное обновление
 DELETE /api/v1/documents/{id}     # Удаление
 
+# ✅ AI Search endpoints
+POST   /api/v1/search             # DSPy-powered поиск
+GET    /api/v1/search/suggestions # Автодополнение
+POST   /api/v1/chat               # AI чат с контекстом
+
+# ✅ File processing endpoints
+POST   /api/v1/files/upload       # Загрузка файлов
+GET    /api/v1/files/{id}/status  # Статус обработки
+POST   /api/v1/files/bulk         # Массовая загрузка
+
 # ✅ Consistent response format
 {
+  "message": "Success message",
   "data": {},
   "meta": {
     "total": 100,
     "page": 1,
-    "per_page": 20
+    "per_page": 20,
+    "took": 0.123
   }
 }
 ```
 
+### 🤖 AI/ML Integration Patterns
+
+```python
+# ✅ DSPy программируемые промпты
+import dspy
+
+class DocumentSearch(dspy.Module):
+    def __init__(self):
+        self.retrieve = dspy.Retrieve(k=5)
+        self.generate = dspy.ChainOfThought("context, question -> answer")
+
+    def forward(self, question):
+        context = self.retrieve(question).passages
+        return self.generate(context=context, question=question)
+
+# ✅ Async AI calls
+async def ai_search(query: str) -> SearchResponse:
+    async with httpx.AsyncClient() as client:
+        embeddings = await generate_embeddings(query)
+        results = await vector_search(embeddings)
+        return await ai_rerank(query, results)
+
+# ✅ Background AI tasks
+@celery.task
+def process_document_ai(doc_id: str):
+    doc = get_document(doc_id)
+    chunks = ingest_document(doc)
+    embeddings = generate_embeddings(chunks)
+    save_to_vector_db(embeddings)
+```
+
 ### 🔐 Security First
 
+**Input & File Security:**
+
 - **Input Validation**: Pydantic models для валидации всех входных данных
-- **Rate Limiting**: Защита от DDoS и брутфорса
+- **File Type Validation**: Строгая проверка MIME types и extensions
+- **File Size Limits**: Максимум 10MB на файл, 100MB на пользователя
+- **Malware Scanning**: ClamAV или аналог для проверки файлов
+- **File Encryption**: AES-256 для sensitive документов
+
+**API & Network Security:**
+
+- **Rate Limiting**: 100 req/min per user, 1000 req/min per IP
 - **CORS Configuration**: Строгая настройка allowed origins
 - **SQL Injection Protection**: Только параметризованные запросы
-- **Authentication**: JWT + refresh tokens, secure httpOnly cookies
-- **Authorization**: RBAC с детализированными правами
+- **XSS Protection**: CSP headers, input sanitization
+- **HTTPS Only**: Redirect HTTP to HTTPS, HSTS headers
+
+**Authentication & Authorization:**
+
+- **JWT Security**: Short-lived tokens (15 min), secure refresh
+- **Password Security**: bcrypt + salt, complexity requirements
+- **Session Security**: Secure cookies, automatic timeout
+- **RBAC**: Role-based access с resource-level permissions
+- **Audit Logging**: Все действия с файлами и данными
 
 ### 🚀 Performance & Scalability
 
-- **Caching Strategy**: Redis для session, query results, rate limiting
-- **Database Connection Pooling**: Async pool с настройкой min/max connections
-- **Background Tasks**: Celery для длительных операций
-- **Monitoring**: Prometheus metrics, structured logging
-- **Health Checks**: Liveness/readiness endpoints для Kubernetes
+- **Caching Strategy**: Redis для session, query results, vector cache
+- **Database Connection Pooling**: Async SQLAlchemy с оптимизированным pool
+- **Background Tasks**: Celery для AI processing, file ingestion
+- **Vector Search Optimization**: Embedding cache, HNSW indexing
+- **Monitoring**: Prometheus metrics, structured logging, AI metrics
+- **Health Checks**: Liveness/readiness + AI service health
 
 ## 🚨 CRITICAL RULES
 
 ### ❌ ЗАПРЕЩЕНО
 
 - Любой код без TypeScript типов
+- Hardcoded промпты (только DSPy программы)
+- Синхронные AI API calls (только async)
 - Мутация состояния напрямую (только через actions)
-- Inline styles (только CSS-in-JS или CSS modules)
+- Inline styles (только Tailwind classes)
 - Hardcoded URLs и константы
 - Игнорирование ESLint/TypeScript ошибок
 - Console.log в production коде
+- Блокирующие операции в main thread
 
 ### ✅ ОБЯЗАТЕЛЬНО
 
 - Code review для всех PR
+- DSPy программы вместо string промптов
+- Async/await для всех AI и DB операций
 - Unit тесты для всех сервисов и утилит
 - Integration тесты для API endpoints
 - TypeScript strict mode без any
 - Structured logging с correlation IDs
-- Performance budget: < 3s FCP, < 5s LCP
+- Performance budget: < 200ms API, < 3s FCP
+- AI response time monitoring
+- Vector search optimization
+
+## 🔄 GIT WORKFLOW & CODE REVIEW
+
+### 🌿 Branching Strategy
+
+```bash
+# Main branches
+main              # Production ready code
+develop           # Integration branch for features
+
+# Feature branches
+feature/auth-jwt  # New features
+bugfix/login-fix  # Bug fixes
+hotfix/security   # Critical production fixes
+release/v1.2.0    # Release preparation
+
+# Branch naming convention
+feature/{ticket-id}-{short-description}
+bugfix/{ticket-id}-{short-description}
+```
+
+### 📝 Commit Conventions
+
+```bash
+# Format: type(scope): description
+feat(auth): add JWT token refresh mechanism
+fix(search): resolve DSPy timeout issues
+docs(api): update OpenAPI documentation
+style(ui): improve button hover states
+refactor(db): optimize query performance
+test(search): add integration tests
+chore(deps): update FastAPI to 0.104.1
+
+# Breaking changes
+feat(api)!: change search response format
+```
+
+### 🔍 Code Review Guidelines
+
+**Mandatory checks:**
+
+- [ ] Code follows TypeScript/Python style guides
+- [ ] All new code has tests (unit + integration)
+- [ ] API changes are documented in OpenAPI
+- [ ] Performance impact assessed
+- [ ] Security implications reviewed
+- [ ] Error handling implemented
+- [ ] Logging added for debugging
+
+**Review process:**
+
+1. **Self-review** - author reviews own code first
+2. **Automated checks** - CI/CD pipeline passes
+3. **Peer review** - at least 1 senior developer approval
+4. **Security review** - for auth/security changes
+5. **Performance review** - for database/AI changes
+
+## 🗄️ DATABASE & API STANDARDS
+
+### 📊 Database Migration Rules
+
+```python
+# ✅ Safe migrations
+class Migration:
+    def upgrade():
+        # Add new columns with defaults
+        op.add_column('users', sa.Column('avatar_url', sa.String(), nullable=True))
+
+        # Create new tables
+        op.create_table('user_sessions', ...)
+
+        # Add indexes
+        op.create_index('idx_documents_created_at', 'documents', ['created_at'])
+
+    def downgrade():
+        # Always implement rollback
+        op.drop_index('idx_documents_created_at')
+        op.drop_table('user_sessions')
+        op.drop_column('users', 'avatar_url')
+
+# ❌ Dangerous migrations (avoid)
+# - Dropping columns without deprecation period
+# - Changing column types without compatibility
+# - Removing indexes on large tables
+```
+
+### 🔄 API Versioning Strategy
+
+```python
+# ✅ Versioning approach
+/api/v1/documents  # Current stable version
+/api/v2/documents  # New version with breaking changes
+
+# ✅ Backward compatibility
+class DocumentResponseV1(BaseModel):
+    id: str
+    title: str
+    content: str
+
+class DocumentResponseV2(BaseModel):
+    id: str
+    title: str
+    content: str
+    metadata: dict  # New field
+    embedding_status: str  # New field
+
+# Support both versions
+@app.get("/api/v1/documents", response_model=List[DocumentResponseV1])
+@app.get("/api/v2/documents", response_model=List[DocumentResponseV2])
+```
 
 ## 📝 CODE STANDARDS
 
@@ -206,4 +424,240 @@ type Result<T, E = Error> =
   | { success: false; error: E };
 ```
 
-**🎉 REMEMBER: Great code is not just working code - it's maintainable, testable, secure, performant, and delightful to work with!**
+## 🤖 AI-SPECIFIC DEVELOPMENT STANDARDS
+
+### 🧠 DSPy Best Practices
+
+```python
+# ✅ Structured DSPy programs
+class DocumentQA(dspy.Module):
+    def __init__(self, k=5):
+        super().__init__()
+        self.k = k
+        self.retrieve = dspy.Retrieve(k=k)
+        self.generate_answer = dspy.ChainOfThought("context, question -> answer")
+
+    def forward(self, question: str) -> str:
+        # Always validate inputs
+        if not question or len(question.strip()) < 3:
+            raise ValueError("Question must be at least 3 characters")
+
+        # Retrieve relevant documents
+        context = self.retrieve(question).passages
+
+        # Generate answer with context
+        prediction = self.generate_answer(
+            context="\n".join(context),
+            question=question
+        )
+
+        return prediction.answer
+
+# ✅ Error handling for AI operations
+async def safe_ai_operation(operation_func, *args, **kwargs):
+    try:
+        result = await operation_func(*args, **kwargs)
+        return {"success": True, "data": result}
+    except openai.RateLimitError:
+        return {"success": False, "error": "rate_limit", "retry_after": 60}
+    except openai.APIError as e:
+        return {"success": False, "error": "api_error", "details": str(e)}
+    except Exception as e:
+        return {"success": False, "error": "unknown", "details": str(e)}
+```
+
+### 🔍 Vector Search Optimization
+
+```python
+# ✅ Efficient embedding generation
+class EmbeddingService:
+    def __init__(self):
+        self.cache = {}  # In-memory cache for frequent queries
+        self.batch_size = 100  # Optimal batch size
+
+    async def generate_embeddings(self, texts: List[str]) -> List[List[float]]:
+        # Check cache first
+        cached_results = {}
+        uncached_texts = []
+
+        for text in texts:
+            text_hash = hashlib.md5(text.encode()).hexdigest()
+            if text_hash in self.cache:
+                cached_results[text] = self.cache[text_hash]
+            else:
+                uncached_texts.append(text)
+
+        # Generate embeddings for uncached texts in batches
+        new_embeddings = {}
+        for i in range(0, len(uncached_texts), self.batch_size):
+            batch = uncached_texts[i:i + self.batch_size]
+            batch_embeddings = await openai.embeddings.create(
+                input=batch,
+                model="text-embedding-3-small"
+            )
+
+            for text, embedding in zip(batch, batch_embeddings.data):
+                text_hash = hashlib.md5(text.encode()).hexdigest()
+                self.cache[text_hash] = embedding.embedding
+                new_embeddings[text] = embedding.embedding
+
+        # Combine results
+        return [cached_results.get(text, new_embeddings[text]) for text in texts]
+
+# ✅ Search result ranking
+def rank_search_results(results: List[SearchResult], query: str) -> List[SearchResult]:
+    # Combine multiple ranking signals
+    for result in results:
+        # Vector similarity (primary signal)
+        vector_score = result.similarity_score
+
+        # Text matching (secondary signal)
+        text_score = calculate_text_similarity(query, result.content)
+
+        # Recency bonus (tertiary signal)
+        recency_score = calculate_recency_bonus(result.created_at)
+
+        # Combined score with weights
+        result.final_score = (
+            0.6 * vector_score +
+            0.3 * text_score +
+            0.1 * recency_score
+        )
+
+    return sorted(results, key=lambda x: x.final_score, reverse=True)
+```
+
+### 📊 AI Performance Monitoring
+
+```python
+# ✅ AI metrics tracking
+class AIMetrics:
+    def __init__(self):
+        self.response_times = []
+        self.token_usage = []
+        self.error_rates = {}
+
+    def track_ai_request(self, operation: str, response_time: float,
+                        tokens_used: int, success: bool):
+        # Track response time
+        self.response_times.append({
+            'operation': operation,
+            'response_time': response_time,
+            'timestamp': datetime.utcnow()
+        })
+
+        # Track token usage
+        self.token_usage.append({
+            'operation': operation,
+            'tokens': tokens_used,
+            'timestamp': datetime.utcnow()
+        })
+
+        # Track error rates
+        if operation not in self.error_rates:
+            self.error_rates[operation] = {'success': 0, 'error': 0}
+
+        if success:
+            self.error_rates[operation]['success'] += 1
+        else:
+            self.error_rates[operation]['error'] += 1
+
+# ✅ AI quality assurance
+def validate_ai_response(response: str, expected_criteria: dict) -> bool:
+    checks = {
+        'min_length': len(response) >= expected_criteria.get('min_length', 10),
+        'max_length': len(response) <= expected_criteria.get('max_length', 2000),
+        'contains_answer': any(keyword in response.lower()
+                             for keyword in expected_criteria.get('keywords', [])),
+        'no_hallucination': not contains_hallucination_patterns(response),
+        'appropriate_tone': check_response_tone(response)
+    }
+
+    return all(checks.values())
+```
+
+## 🎯 ENTERPRISE DEVELOPMENT STANDARDS
+
+### 📊 Performance Benchmarks
+
+**API Response Times:**
+
+- Search endpoints: < 200ms (95th percentile)
+- CRUD operations: < 100ms (95th percentile)
+- AI chat responses: < 2s (95th percentile)
+- File upload: < 5s for 10MB files
+
+**Frontend Performance:**
+
+- First Contentful Paint: < 1.5s
+- Largest Contentful Paint: < 2.5s
+- Time to Interactive: < 3.5s
+- Cumulative Layout Shift: < 0.1
+
+### 🔒 Security Standards
+
+**Authentication & Authorization:**
+
+- JWT token expiry: 15 minutes
+- Refresh token rotation: enabled
+- Password policy: 12+ chars, complexity rules
+- Rate limiting: 100 req/min per user
+
+**Data Protection:**
+
+- Encryption at rest: AES-256
+- Encryption in transit: TLS 1.3+
+- PII data anonymization
+- GDPR compliance ready
+
+### 🧪 Testing Requirements
+
+**Coverage Targets:**
+
+- Unit tests: 80%+ for services/utils
+- Integration tests: 100% for critical paths
+- E2E tests: Happy path + error scenarios
+- Performance tests: Load + stress testing
+
+**Test Types:**
+
+- Backend: pytest + async testing
+- Frontend: Jest + React Testing Library
+- API: Postman/Newman collections
+- Load: Locust/Artillery
+
+### 📈 Monitoring & Observability
+
+**Metrics to Track:**
+
+- API latency (p50, p95, p99)
+- Error rates by endpoint
+- AI model performance
+- Vector search accuracy
+- User engagement metrics
+
+**Alerting Rules:**
+
+- API error rate > 1%
+- Response time > 500ms
+- AI service downtime
+- Database connection issues
+- High memory/CPU usage
+
+### 🚀 Deployment Standards
+
+**Environment Strategy:**
+
+- Development: Local + Docker Compose
+- Staging: Cloud with production-like data
+- Production: Multi-AZ deployment
+- DR: Cross-region backup
+
+**Release Process:**
+
+- Feature flags for new features
+- Blue-green deployments
+- Automated rollback triggers
+- Canary releases for AI models
+
+**🎉 REMEMBER: Enterprise code is maintainable, testable, secure, performant, observable, and scalable by design!**

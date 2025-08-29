@@ -4,6 +4,13 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 
+class SearchQuery(BaseModel):
+    """Search query model."""
+    
+    query: str = Field(..., min_length=1, description="Search query")
+    limit: Optional[int] = Field(default=10, ge=1, le=100, description="Number of results")
+
+
 class SearchRequest(BaseModel):
     """Search request model."""
     
@@ -18,16 +25,21 @@ class SearchResult(BaseModel):
     
     id: str = Field(..., description="Result ID")
     title: str = Field(..., description="Result title")
-    type: str = Field(..., description="Result type")
     content: str = Field(..., description="Result content preview")
-    author: str = Field(..., description="Author name")
-    date: str = Field(..., description="Creation/modification date")
-    tags: List[str] = Field(default_factory=list, description="Associated tags")
     score: float = Field(default=1.0, ge=0.0, le=1.0, description="Relevance score")
+    document_type: str = Field(..., description="Document type")
+    created_at: str = Field(..., description="Creation date")
 
 
 class SearchResponse(BaseModel):
     """Search response model."""
+    
+    message: str = Field(..., description="Response message")
+    data: dict = Field(..., description="Search results data")
+
+
+class SearchResponseDetailed(BaseModel):
+    """Detailed search response model."""
     
     results: List[SearchResult] = Field(..., description="Search results")
     total: int = Field(..., ge=0, description="Total number of results")
