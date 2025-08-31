@@ -2,7 +2,26 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 pydantic==2.11.7
+pydantic-settings==2.5.2
 python-multipart==0.0.6
+
+# Database dependencies (Python 3.13 compatible)
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+alembic==1.16.5
+
+# Caching and session store
+redis[hiredis]==5.0.1
+aioredis==2.0.1
+
+# Security and validation
+python-magic==0.4.27
+filetype==1.2.0
+passlib[bcrypt]==1.7.4
+python-jose[cryptography]==3.3.0
+
+# Background tasks and queues (future use)
+celery==5.3.4
 
 # CORS and middleware
 python-dotenv==1.0.0

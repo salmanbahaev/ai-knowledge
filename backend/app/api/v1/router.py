@@ -12,3 +12,6 @@ api_router.include_router(dashboard.router, prefix="/dashboard", tags=["📊 П�
 api_router.include_router(search.router, prefix="/search", tags=["🔍 Поиск"])
 
 
+
+
+
