@@ -1,70 +1,75 @@
-# 🧪 Ручное тестирование AI Knowledge Platform - Этап 2.2
+# 🚀 AI Knowledge Platform - Запуск проекта
 
-## 🚀 Запуск для тестирования
+## Требования
 
-### 1. Запуск сервисов
+- Python 3.13+
+- Docker Desktop
+- Git
+
+## 🔧 Первый запуск (fresh install)
 
 ```bash
-# В корне проекта
+# 1. Клонировать репозиторий
+git clone <repository-url>
+cd ai-knowledge
+
+# 2. Запустить PostgreSQL и Redis
 docker-compose -f docker-compose.dev.yml up -d
-```
 
-### 2. Настройка backend
-
-```bash
+# 3. Настроить backend
 cd backend
 pip install -r requirements.txt
 cp env.example .env
-python -m alembic stamp head  # Пометить базу как актуальную
-```
 
-### 3. Запуск приложения
+# 4. Настроить базу данных
+python -m alembic stamp head
 
-```bash
-# ВАЖНО: Убедитесь что вы в папке backend
-# Если нет, выполните: cd backend
+# 5. Запустить приложение
 python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-## ✅ Ручная проверка
+## 🔄 Повторный запуск
 
-### 1. API документация
+```bash
+# 1. Запустить сервисы
+docker-compose -f docker-compose.dev.yml up -d
 
-**http://localhost:8000/docs** - должен показать Swagger UI
+# 2. Запустить приложение
+cd backend
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
 
-### 2. Health Checks
+## ✅ Проверка работы
 
-- **http://localhost:8000/api/v1/health/** - общий статус
-- **http://localhost:8000/api/v1/health/database** - статус PostgreSQL
-- **http://localhost:8000/api/v1/health/cache** - статус Redis
+- **API документация:** http://localhost:8000/docs
+- **Health check:** http://localhost:8000/api/v1/health/
+- **Корневая страница:** http://localhost:8000/
 
-### 3. Корневая страница
+### Ожидаемый результат health check:
 
-**http://localhost:8000/** - основная страница приложения
-
-## 🎯 Критерии успеха
-
-- [x] Сервер запускается без ошибок
-- [x] Health checks показывают "healthy"
-- [x] Swagger UI доступен
-- [x] Нет критичных ошибок в логах
+```json
+{
+  "status": "healthy",
+  "services": {
+    "database": { "status": "healthy" },
+    "cache": { "status": "healthy" },
+    "application": { "status": "healthy" }
+  }
+}
+```
 
 ## 🛠️ Troubleshooting
 
-### PostgreSQL не подключается
-
 ```bash
-docker-compose -f docker-compose.dev.yml restart postgres
-```
+# Перезапуск сервисов
+docker-compose -f docker-compose.dev.yml restart
 
-### Redis не подключается
+# Проверка статуса сервисов
+docker-compose -f docker-compose.dev.yml ps
 
-```bash
-docker-compose -f docker-compose.dev.yml restart redis
-```
+# Просмотр логов
+docker-compose -f docker-compose.dev.yml logs
 
-### Migration ошибки
-
-```bash
-python -m alembic stamp head
+# Остановка всех сервисов
+docker-compose -f docker-compose.dev.yml down
 ```
