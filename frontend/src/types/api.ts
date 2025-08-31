@@ -16,7 +16,15 @@ export interface ErrorResponse {
   timestamp: string;
 }
 
-// Dashboard types
+// Dashboard types (updated for real backend)
+export interface DashboardData {
+  total_documents: number;
+  total_searches: number;
+  total_chats: number;
+  active_users: number;
+}
+
+// Legacy StatCard interface for UI compatibility
 export interface StatCard {
   title: string;
   value: string;
@@ -33,35 +41,27 @@ export interface ActivityItem {
   type: 'upload' | 'search' | 'chat' | 'view';
 }
 
-export interface DashboardData {
-  stats: StatCard[];
-  recent_activities: ActivityItem[];
+// Search types (updated for real backend)
+export interface SearchResponse {
+  query: string;
+  total_results: number;
+  results: SearchResult[];
 }
 
-// Search types
 export interface SearchResult {
   id: string;
   title: string;
   type: 'pdf' | 'docx' | 'txt' | 'pptx';
   content: string;
-  author: string;
-  date: string;
-  tags: string[];
-  score: number;
-}
-
-export interface SearchResponse {
-  results: SearchResult[];
-  total: number;
-  query: string;
-  took: number;
+  author?: string;
+  date?: string;
+  tags?: string[];
+  score?: number;
 }
 
 export interface SearchRequest {
   query: string;
-  type_filter?: string;
   limit?: number;
-  offset?: number;
 }
 
 
