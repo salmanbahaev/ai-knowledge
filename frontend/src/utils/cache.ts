@@ -47,14 +47,14 @@ class ApiCache {
    */
   private cleanup(): void {
     // Remove expired items
-    for (const [key, item] of this.cache.entries()) {
+    Array.from(this.cache.entries()).forEach(([key, item]) => {
       if (this.isExpired(item)) {
         this.cache.delete(key);
         if (this.config.enableDevLogs) {
           console.log(`🗑️ Cache expired: ${key}`);
         }
       }
-    }
+    });
 
     // Enforce size limit (LRU - remove oldest)
     if (this.cache.size > this.config.maxSize) {

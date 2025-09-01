@@ -151,26 +151,35 @@ export function useOptimisticList<T extends { id: string | number }>(
     update?: (id: string | number, data: Partial<T>) => Promise<T>;
   }
 ) {
+  const optimisticUpdateHook = useOptimisticUpdate<T[], { operation: string; id?: string | number; item?: Omit<T, 'id'>; data?: Partial<T>; currentList: T[] }>(
+    initialList,
+    async (params: { operation: string; id?: string | number; item?: Omit<T, 'id'>; data?: Partial<T>; currentList: T[] }): Promise<T[]> => {
+      const { operation, currentList, ...args } = params;
+
+      switch (operation) {
+        case 'add':
+          const newItem = await apiOperations.add?.(args.item!);
+          return newItem ? [...currentList, newItem] : currentList;
+        case 'remove':
+          await apiOperations.remove?.(args.id!);
+          return currentList.filter((item: T) => item.id !== args.id);
+        case 'update':
+          const updatedItem = await apiOperations.update?.(args.id!, args.data!);
+          return updatedItem ? currentList.map((item: T) =>
+            item.id === args.id ? updatedItem : item
+          ) : currentList;
+        default:
+          throw new Error(`Unknown operation: ${operation}`);
+      }
+    }
+  );
+
   const {
     data: list,
     executeOptimisticUpdate,
     updateData,
     ...state
-  } = useOptimisticUpdate(initialList, async (params: any) => {
-    const { operation, ...args } = params;
-    
-    switch (operation) {
-      case 'add':
-        return apiOperations.add?.(args.item);
-      case 'remove':
-        await apiOperations.remove?.(args.id);
-        return state.data.filter(item => item.id !== args.id);
-      case 'update':
-        return apiOperations.update?.(args.id, args.data);
-      default:
-        throw new Error(`Unknown operation: ${operation}`);
-    }
-  });
+  } = optimisticUpdateHook;
 
   const addItem = useCallback(
     (newItem: Omit<T, 'id'>) => {
@@ -180,7 +189,8 @@ export function useOptimisticList<T extends { id: string | number }>(
 
       executeOptimisticUpdate(optimisticList, {
         operation: 'add',
-        item: newItem
+        item: newItem,
+        currentList: list
       });
     },
     [list, executeOptimisticUpdate]
@@ -192,7 +202,8 @@ export function useOptimisticList<T extends { id: string | number }>(
 
       executeOptimisticUpdate(optimisticList, {
         operation: 'remove',
-        id
+        id,
+        currentList: list
       });
     },
     [list, executeOptimisticUpdate]
@@ -207,7 +218,8 @@ export function useOptimisticList<T extends { id: string | number }>(
       executeOptimisticUpdate(optimisticList, {
         operation: 'update',
         id,
-        data: updates
+        data: updates,
+        currentList: list
       });
     },
     [list, executeOptimisticUpdate]

@@ -43,7 +43,21 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     isUploading,
     isCompleted
   } = useFileUpload({
-    validationConfig: { maxFiles },
+    validationConfig: {
+      maxSize: 10 * 1024 * 1024, // 10MB
+      allowedTypes: [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain',
+        'text/markdown',
+        'application/rtf'
+      ],
+      allowedExtensions: [
+        '.pdf', '.doc', '.docx', '.txt', '.md', '.rtf'
+      ],
+      maxFiles
+    },
     onAllUploadsComplete: onUploadComplete
   });
 

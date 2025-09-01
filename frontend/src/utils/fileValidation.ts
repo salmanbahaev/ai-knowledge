@@ -161,7 +161,7 @@ export function validateFiles(
   const fileNames = files.map(f => f.name.toLowerCase());
   const duplicates = fileNames.filter((name, index) => fileNames.indexOf(name) !== index);
   if (duplicates.length > 0) {
-    globalErrors.push(`Найдены файлы с одинаковыми именами: ${[...new Set(duplicates)].join(', ')}`);
+    globalErrors.push(`Найдены файлы с одинаковыми именами: ${Array.from(new Set(duplicates)).join(', ')}`);
   }
 
   // Check total size

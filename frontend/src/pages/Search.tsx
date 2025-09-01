@@ -124,21 +124,27 @@ export const Search: React.FC = () => {
                         {result.content}
                       </p>
                       <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
-                        <div className="flex items-center space-x-1">
-                          <User className="w-3 h-3" />
-                          <span>{result.author}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="w-3 h-3" />
-                          <span>{new Date(result.date).toLocaleDateString()}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          {result.tags.map((tag: string, index: number) => (
-                            <span key={index} className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
+                        {result.author && (
+                          <div className="flex items-center space-x-1">
+                            <User className="w-3 h-3" />
+                            <span>{result.author}</span>
+                          </div>
+                        )}
+                        {result.date && (
+                          <div className="flex items-center space-x-1">
+                            <Calendar className="w-3 h-3" />
+                            <span>{new Date(result.date).toLocaleDateString()}</span>
+                          </div>
+                        )}
+                        {result.tags && result.tags.length > 0 && (
+                          <div className="flex items-center space-x-1">
+                            {result.tags.map((tag: string, index: number) => (
+                              <span key={index} className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

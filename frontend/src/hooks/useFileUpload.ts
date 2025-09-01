@@ -119,27 +119,7 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
       const response = await fetch(uploadEndpoint, {
         method: 'POST',
         body: formData,
-        signal: abortController.signal,
-        // Add upload progress tracking
-        ...(window.fetch && {
-          onUploadProgress: (event: ProgressEvent) => {
-            if (event.lengthComputable) {
-              const now = Date.now();
-              const timeDiff = (now - lastTime) / 1000; // seconds
-              const bytesDiff = event.loaded - lastLoaded;
-              const speed = timeDiff > 0 ? bytesDiff / timeDiff : 0;
-
-              updateProgress(fileId, {
-                progress: Math.round((event.loaded / event.total) * 100),
-                uploaded: event.loaded,
-                speed
-              });
-
-              lastLoaded = event.loaded;
-              lastTime = now;
-            }
-          }
-        })
+        signal: abortController.signal
       });
 
       if (!response.ok) {
@@ -224,10 +204,13 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
         const response = await uploadSingleFile(file);
         results.push({ fileId, success: true, response });
       } catch (error) {
-        results.push({ 
-          fileId, 
-          success: false, 
-          error: error instanceof NetworkError ? error : new NetworkError(error.message)
+        const networkError = error instanceof NetworkError
+          ? error
+          : new NetworkError(error instanceof Error ? error.message : 'Unknown error');
+        results.push({
+          fileId,
+          success: false,
+          error: networkError
         });
       }
     });
