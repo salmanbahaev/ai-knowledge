@@ -39,9 +39,11 @@ export const Search: React.FC = () => {
       pdf: 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400',
       docx: 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400',
       txt: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
-      pptx: 'bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400'
+      pptx: 'bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400',
+      md: 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400',
+      unknown: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
     };
-    return colors[type as keyof typeof colors] || colors.txt;
+    return colors[type as keyof typeof colors] || colors.unknown;
   };
 
   return (
@@ -109,15 +111,15 @@ export const Search: React.FC = () => {
                 <div key={result.id} className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200 cursor-pointer">
                   <div className="flex items-start space-x-4">
                     <div className="flex-shrink-0">
-                      {getFileIcon(result.type)}
+                      {getFileIcon(result.document_type || result.type || 'unknown')}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-2">
                         <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
                           {result.title}
                         </h3>
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(result.type)}`}>
-                          {result.type.toUpperCase()}
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(result.document_type || result.type || 'unknown')}`}>
+                          {(result.document_type || result.type || 'unknown').toUpperCase()}
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">

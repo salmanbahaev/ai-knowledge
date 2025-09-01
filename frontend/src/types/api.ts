@@ -51,12 +51,14 @@ export interface SearchResponse {
 export interface SearchResult {
   id: string;
   title: string;
-  type: 'pdf' | 'docx' | 'txt' | 'pptx';
+  document_type: string; // Backend uses document_type
+  type?: 'pdf' | 'docx' | 'txt' | 'pptx'; // Legacy support
   content: string;
   author?: string;
   date?: string;
   tags?: string[];
   score?: number;
+  created_at?: string; // Backend field
 }
 
 export interface SearchRequest {

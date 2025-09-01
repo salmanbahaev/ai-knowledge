@@ -16,26 +16,18 @@ export const searchService = {
     // For search, we use POST but cache based on query parameters
     const cacheKey = `search:${query}:${limit}`;
     
-    // Check cache first
-    const cached = cachedApi.get<ApiResponse<SearchResponse>>(
-      '/search',
-      {
-        useCache: true,
-        cacheTTL: cacheConfig.ttl,
-        cacheKey,
-        staleWhileRevalidate: false // Search results should be exact
-      }
-    );
+    // Check cache first (manually check cache, don't use GET request)
+    const apiCache = await import('../utils/cache').then(m => m.apiCache);
+    const cached = apiCache.get<ApiResponse<SearchResponse>>(cacheKey);
 
     if (cached) {
-      return (cached as any).data;
+      return cached.data;
     }
 
     // Make fresh request
     const response = await cachedApi.post<ApiResponse<SearchResponse>>('/search', request);
     
     // Manually cache the POST response
-    const apiCache = await import('../utils/cache').then(m => m.apiCache);
     apiCache.set(cacheKey, response, {}, cacheConfig.ttl);
     
     return response.data;
