@@ -94,6 +94,14 @@ class User(Base):
         doc="Account lock expiration time"
     )
     
+    # Relationships
+    documents: Mapped[list["Document"]] = relationship(
+        "Document",
+        back_populates="owner",
+        cascade="all, delete-orphan",
+        doc="User's documents"
+    )
+    
     last_login: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True),
         nullable=True,

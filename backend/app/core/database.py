@@ -119,6 +119,28 @@ async def close_database() -> None:
         logger.info("Database connections closed")
 
 
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """
+    FastAPI dependency for database sessions.
+    
+    Yields:
+        AsyncSession: Database session
+    """
+    global SessionLocal
+    
+    if SessionLocal is None:
+        await init_database()
+    
+    async with SessionLocal() as session:
+        try:
+            yield session
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
+
+
 # Database health check
 async def check_database_health() -> dict:
     """

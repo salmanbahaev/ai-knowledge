@@ -25,6 +25,15 @@ class ErrorResponse(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 
+class BaseResponse(BaseModel):
+    """Base response format for simple endpoints."""
+    
+    message: str = Field(..., description="Response message")
+    data: Optional[Dict[str, Any]] = Field(default=None, description="Response data")
+    status: str = Field(default="success", description="Response status")
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+
 class HealthResponse(BaseModel):
     """Health check response."""
     

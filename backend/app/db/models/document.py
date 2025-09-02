@@ -260,12 +260,12 @@ class Document(Base):
     
     def increment_view_count(self) -> None:
         """Increment view count and update last accessed."""
-        self.view_count += 1
+        self.view_count = (self.view_count or 0) + 1
         self.last_accessed = datetime.utcnow()
     
     def increment_download_count(self) -> None:
         """Increment download count."""
-        self.download_count += 1
+        self.download_count = (self.download_count or 0) + 1
     
     def can_be_accessed_by(self, user_id: str) -> bool:
         """Check if user can access this document."""

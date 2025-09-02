@@ -56,6 +56,10 @@ class Settings(BaseSettings):
         "application/json"
     ]
     
+    # Document Storage
+    STORAGE_ROOT: str = os.getenv("STORAGE_ROOT", "./storage")
+    ENABLE_FILE_ENCRYPTION: bool = os.getenv("ENABLE_FILE_ENCRYPTION", "true").lower() == "true"
+    
     # Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_PER_MINUTE", "100"))
     RATE_LIMIT_BURST: int = int(os.getenv("RATE_LIMIT_BURST", "200"))
